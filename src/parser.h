@@ -15,6 +15,7 @@ namespace ntr {
         std::unique_ptr<Expr> parseFactor();
         std::unique_ptr<Expr> parseTerm();
         std::unique_ptr<Expr> parseExpr();
+        std::unique_ptr<Expr> parseStr();
         std::unique_ptr<Stmt> parseStmt(ntr::env::Env &env);
         
         template <typename T>

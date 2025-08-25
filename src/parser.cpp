@@ -13,8 +13,16 @@ namespace ntr {
         throw runtime_error("Syntax error");
     }
 
+    std::unique_ptr<Expr> Parser::parseStr() {
+        if(std::holds_alternative<StringLiteral>(peek())) {
+            return std::make_unique<StrExpr>(std::get<StringLiteral>(get()).value);
+        }
+        throw runtime_error("Expected string literal");
+    }
+
     std::unique_ptr<Expr> Parser::parseFactor() {
         if(std::holds_alternative<Integer>(peek())) return parseNumber();
+        if(std::holds_alternative<StringLiteral>(peek())) return parseStr();
         if(std::holds_alternative<Identifier>(peek())) 
             return std::make_unique<VarExpr>(std::get<Identifier>(get()).value);
         if(std::holds_alternative<LPar>(peek())) {

@@ -1,8 +1,6 @@
 #include "env.h"
 #include "ast.h"
 
-
-#pragma once
 using namespace std;
 
 namespace ntr::env {

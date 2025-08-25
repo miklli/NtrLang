@@ -12,7 +12,7 @@ namespace ntr::lexer {
                 default:
                     if(isalpha(*it)) {
                         auto blank = std::find_if(it, code.end(), [](char c){
-                            return c == ' ' || c == '\n' || c == '\t' || c == '\r' || !isalpha(c);
+                            return c == ' ' || c == '\n' || c == '\t' || c == '\r' || (!isalpha(c) && !isdigit(c));
                         });
                         string StringValue(it, blank);
                         static map<string, ntr::token::Keyword> keywords = {
@@ -77,6 +77,15 @@ namespace ntr::lexer {
                     break;
                 case '/':
                     result.emplace_back(ntr::token::Slash{});
+                    break;
+                case '"':
+                    std::string str;
+                    it++;
+                    while(*it != '"') {
+                        str += *it;
+                        it++;
+                    }
+                    result.emplace_back(ntr::token::StringLiteral{ .value=str });
                     break;
             }
         }

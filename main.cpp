@@ -9,6 +9,9 @@ void print(const Any &token) {
     if(auto value = get_if<ntr::token::Identifier>(&token)) {
         cout << "Identifier " << value->value  << '\n';
     }
+    if(auto value = get_if<ntr::token::StringLiteral>(&token)) {
+        cout << "StringLiteral " << value->value  << '\n';
+    }
     else if(auto value = get_if<ntr::token::LPar>(&token)) {
         cout << "LPar" << '\n';
     }

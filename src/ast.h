@@ -6,7 +6,12 @@ enum class Operator {Plus, Minus, Multip, Slash};
 
 struct Expr { 
     virtual ~Expr() = default;
-    virtual int eval(ntr::env::Env &env) const = 0;
+    virtual int eval(ntr::env::Env &env) const {
+        throw std::runtime_error("This expression cannot be evaluated as int");
+    }
+    virtual std::string evalStr(ntr::env::Env &env) const {
+        throw std::runtime_error("This expression cannot be evaluated as string");
+    }
 };
 
 struct NumberExpr : Expr {
@@ -17,12 +22,11 @@ struct NumberExpr : Expr {
     }
 };
 
-struct VarExpr : Expr {
-    std::string name;
-    VarExpr(std::string name): name(std::move(name)) {}
-    int eval(ntr::env::Env &env) const override {
-        Expr* let = env.getLet(this->name);
-        return let->eval(env);
+struct StrExpr : Expr {
+    std::string value;
+    StrExpr(std::string v): value(std::move(v)) {}
+    std::string evalStr(ntr::env::Env &env) const {
+        return value;
     }
 };
 
@@ -39,6 +43,24 @@ struct BinaryExpr : Expr {
     }
 };
 
+struct VarExpr : Expr {
+    std::string name;
+    VarExpr(std::string name): name(std::move(name)) {}
+
+    int eval(ntr::env::Env &env) const override {
+        Expr* let = env.getLet(this->name);
+        if (auto num = dynamic_cast<BinaryExpr*>(let)) return num->eval(env);
+        else if (auto num = dynamic_cast<NumberExpr*>(let)) return num->eval(env);
+        throw std::runtime_error("Variable is not an int");
+    }
+
+    std::string evalString(ntr::env::Env &env) const {
+        Expr* let = env.getLet(this->name);
+        if (auto str = dynamic_cast<StrExpr*>(let)) return str->evalStr(env);
+        throw std::runtime_error("Variable is not a string");
+    }
+};
+
 struct Stmt {
     virtual ~Stmt() = default;
     virtual void exec(ntr::env::Env &env) = 0;
@@ -52,7 +74,8 @@ struct LetStmt : Stmt {
         name(std::move(name)),
         value(std::move(value)) {}
     void exec(ntr::env::Env &env) override  {
-        value->eval(env);
+        if (auto num = dynamic_cast<NumberExpr*>(value.get()))
+            value->eval(env);
         env.setLet(name, std::move(value));
     }
 };
@@ -62,6 +85,44 @@ struct PrintStmt : Stmt {
     PrintStmt(std::unique_ptr<Expr> val) 
         : value(std::move(val)) {}
     void exec(ntr::env::Env &env) override {
-        cout << value->eval(env);
+        const Expr* e = value.get();
+
+        if (auto* num = dynamic_cast<const NumberExpr*>(e)) {
+            std::cout << num->eval(env);
+            std::cout << '\n';
+            return;
+        }
+        if (auto* str = dynamic_cast<const StrExpr*>(e)) {
+            std::cout << str->evalStr(env);
+            std::cout << '\n';
+            return;
+        }
+        if (auto* var = dynamic_cast<const VarExpr*>(e)) {
+            Expr* let = env.getLet(var->name);
+
+            if (auto* n = dynamic_cast<NumberExpr*>(let)) {
+                std::cout << n->eval(env);
+                std::cout << '\n';
+                return;
+            }
+            if (auto* s = dynamic_cast<StrExpr*>(let)) {
+                std::cout << s->evalStr(env);
+                std::cout << '\n';
+                return;
+            }
+            if (auto* b = dynamic_cast<BinaryExpr*>(let)) {
+                std::cout << b->eval(env);
+                std::cout << '\n';
+                return;
+            }
+            throw std::runtime_error("Unsupported variable type in print");
+        }
+        if (auto* bin = dynamic_cast<const BinaryExpr*>(e)) {
+            std::cout << bin->eval(env); 
+            std::cout << '\n';
+            return;
+        }
+
+        throw std::runtime_error("Unsupported expression type in print");
     }
 };
