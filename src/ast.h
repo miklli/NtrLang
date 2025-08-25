@@ -21,11 +21,8 @@ struct VarExpr : Expr {
     std::string name;
     VarExpr(std::string name): name(std::move(name)) {}
     int eval(ntr::env::Env &env) const override {
-        ntr::env::Value let = env.getLet(this->name);
-        if(let.type != ntr::env::ValueType::Int) {
-            throw runtime_error("Invalid variable type");
-        }
-        return get<int>(let.value);
+        Expr* let = env.getLet(this->name);
+        return let->eval(env);
     }
 };
 
@@ -44,26 +41,27 @@ struct BinaryExpr : Expr {
 
 struct Stmt {
     virtual ~Stmt() = default;
-    virtual void exec(ntr::env::Env &env) const = 0;
+    virtual void exec(ntr::env::Env &env) = 0;
     virtual void printStmt() {}
 };
 
 struct LetStmt : Stmt {
     std::string name;
     std::unique_ptr<Expr> value;
-    LetStmt(std::string name, std::unique_ptr<Expr> &value): 
+    LetStmt(std::string name, std::unique_ptr<Expr> value): 
         name(std::move(name)),
         value(std::move(value)) {}
-    void exec(ntr::env::Env &env) const override  {
-        env.setLet(name, ntr::env::Value(value->eval(env)));
+    void exec(ntr::env::Env &env) override  {
+        value->eval(env);
+        env.setLet(name, std::move(value));
     }
 };
 
 struct PrintStmt : Stmt {
     std::unique_ptr<Expr> value;
-    PrintStmt(std::unique_ptr<Expr> &val) 
+    PrintStmt(std::unique_ptr<Expr> val) 
         : value(std::move(val)) {}
-    void exec(ntr::env::Env &env) const override {
-        ntr::env::Value(value->eval(env)).print();
+    void exec(ntr::env::Env &env) override {
+        cout << value->eval(env);
     }
 };

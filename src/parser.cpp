@@ -57,27 +57,27 @@ namespace ntr {
         return std::get<T>(get());
     }
 
-    bool Parser::isKeyword(const std::string &kw) {
+    bool Parser::isIdent(const std::string &kw) {
         return std::holds_alternative<Identifier>(peek()) &&
             std::get<Identifier>(peek()).value == kw;
     }
 
     std::unique_ptr<Stmt> Parser::parseStmt(ntr::env::Env &env) {
-        if(isKeyword("let")) {
+        if(isIdent("let")) {
             get(); //let
             std::string name = expect<Identifier>("expected let name.").value;
             expect<Equals>("expected '='.");
             auto expr = parseExpr();
             expect<Semicolon>("expected ';'.");
-            return std::make_unique<LetStmt>(name, expr);
+            return std::make_unique<LetStmt>(name, std::move(expr));
         }
-        else if(isKeyword("print")) {
+        else if(isIdent("print")) {
             get(); //print
             expect<LPar>("expected '('.");
             auto expr = parseExpr();
             expect<RPar>("expected ')'.");
             expect<Semicolon>("expected ';'.");
-            return std::make_unique<PrintStmt>(expr);
+            return std::make_unique<PrintStmt>(std::move(expr));
         }
         throw runtime_error("Syntax error");
     }

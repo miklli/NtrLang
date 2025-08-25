@@ -2,22 +2,16 @@
 
 #pragma once
 
+struct Expr;
+
 namespace ntr::env {
-
-    enum class ValueType {Int, Str, Bool};
-
-    struct Value {
-        ValueType type;
-        std::variant<int, std::string, bool> value;
-        Value(int value): type(ValueType::Int), value(value) {}
-        void print();
-    };
 
     class Env {
     public:
-        void setLet(const std::string &name, const Value &v);
-        Value getLet(const std::string &name);
+        void setLet(const std::string &name, std::unique_ptr<Expr> v);
+        Expr* getLet(const std::string &name);
+        bool has(const std::string &name) const;
     private:
-        std::unordered_map<std::string, Value> env;
+        std::unordered_map<std::string, std::unique_ptr<Expr>> env;
     };
 }

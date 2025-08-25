@@ -20,7 +20,7 @@ namespace ntr {
         template <typename T>
         T expect(std::string msg);
 
-        bool isKeyword(const std::string &kw);
+        bool isIdent(const std::string &kw);
     public:
         std::vector<unique_ptr<Stmt>> functions; 
         Parser(const vector<Any> &tokens);
