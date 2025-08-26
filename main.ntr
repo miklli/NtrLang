@@ -5,7 +5,7 @@
 
 #...............
 #Math varibles exemple
-let a = 2 - 3 * 2 + 6/3;
+let a = - 3 * 2 + 2 + 6/3;
 let b = (2 + 4) * 5;
 print(a + b + 1);
 #...............

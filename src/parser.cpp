@@ -51,10 +51,8 @@ namespace ntr {
     std::unique_ptr<Expr> Parser::parseExpr(ntr::env::Env &env) {
         auto left = parseTerm(env);
         if(std::holds_alternative<endTok>(peek())) return left;
-        while(std::holds_alternative<Plus>(peek()) || std::holds_alternative<Minus>(peek())) {
-            Operator op;
-            if(std::holds_alternative<Plus>(peek())) op = Operator::Plus;
-            else op = Operator::Minus;
+        while(std::holds_alternative<Plus>(peek())) {
+            Operator op = Operator::Plus;
             get();
             auto right = parseTerm(env);
             left = std::make_unique<BinaryExpr>(op, std::move(left), std::move(right), env);

@@ -76,6 +76,21 @@ namespace ntr::lexer {
                     result.emplace_back(ntr::token::Multi{});
                     break;
                 case '-':
+                    it++;
+                    while(*it == ' ' || *it == '\t') {
+                        it++;
+                    }
+                    if(isdigit(*it)) {
+                        auto blank = std::find_if(it, code.end(), [](char c){
+                            return !isdigit(c);
+                        });
+                        if(std::holds_alternative<ntr::token::Integer>(result.back())) {
+                            result.emplace_back(ntr::token::Plus{});
+                        }
+                        result.emplace_back(ntr::token::Integer{ .value=-stoi(string(it, blank)) });
+                        it = prev(blank);
+                        break;
+                    }
                     result.emplace_back(ntr::token::Minus{});
                     break;
                 case '/':
