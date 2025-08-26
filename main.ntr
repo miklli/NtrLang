@@ -1,3 +1,19 @@
+#...............
+#Comment exemple
+#...............
+
+
+#...............
+#Math varibles exemple
 let a = 2;
-let b = 90;
-print(a + b * 2);
+let b = 2 + 4 * 5;
+print(a + b + 1);
+#...............
+
+
+#...............
+#String operations exemple
+let hello = "Hello ";
+let world = "world";
+print(hello + world);
+#...............

@@ -17,6 +17,7 @@ namespace ntr::token {
     struct Minus {}; // -
     struct Multi {}; // *
     struct Slash {}; // +
+    struct Lattice {};
     struct StringLiteral {
         string value;
     };
@@ -44,6 +45,7 @@ namespace ntr::token {
         Multi,
         Slash,
         StringLiteral,
+        Lattice,
         endTok
     >;
 };

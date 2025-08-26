@@ -51,6 +51,9 @@ namespace ntr::lexer {
                 case '(':
                     result.emplace_back(ntr::token::LPar{});
                     break;
+                case '#':
+                    while(*it != '\n' && it != std::prev(code.end())) it++;
+                    break;
                 case ')':
                     result.emplace_back(ntr::token::RPar{});
                     break;
