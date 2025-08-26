@@ -2,7 +2,7 @@
 #include "env.h"
 #pragma once
 
-enum class Operator {Plus, Minus, Multip, Slash};
+enum class Operator {Plus, Minus, Multi, Slash};
 
 enum class ExprType { Number, String };
 ExprType getExprType(Expr* e, ntr::env::Env &env); 
@@ -42,7 +42,7 @@ struct BinaryExpr : Expr {
     int eval(ntr::env::Env &env) override {
         if(op == Operator::Plus) return left->eval(env) + right->eval(env);
         if(op == Operator::Minus) return left->eval(env) - right->eval(env);
-        if(op == Operator::Multip) return left->eval(env) * right->eval(env);
+        if(op == Operator::Multi) return left->eval(env) * right->eval(env);
         if(op == Operator::Slash) return left->eval(env) / right->eval(env);
         throw runtime_error("Unknow operator");
     }
