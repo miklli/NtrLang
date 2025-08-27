@@ -41,6 +41,7 @@ struct BinaryExpr : Expr {
     BinaryExpr(Operator o, unique_ptr<Expr> l, unique_ptr<Expr> r, ntr::env::Env &env): op(o), left(std::move(l)), right(std::move(r))  {}
     int eval(ntr::env::Env &env) override {
         if(op == Operator::Plus) return left->eval(env) + right->eval(env);
+        if(op == Operator::Minus) return left->eval(env) - right->eval(env);
         if(op == Operator::Multi) return left->eval(env) * right->eval(env);
         if(op == Operator::Slash) return left->eval(env) / right->eval(env);
         throw runtime_error("Unknow operator");

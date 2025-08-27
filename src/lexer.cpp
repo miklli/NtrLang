@@ -92,6 +92,7 @@ namespace ntr::lexer {
                         break;
                     }
                     result.emplace_back(ntr::token::Minus{});
+                    it = prev(it);
                     break;
                 case '/':
                     result.emplace_back(ntr::token::Slash{});
