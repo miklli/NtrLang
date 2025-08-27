@@ -82,7 +82,6 @@ int main(int argc, char* argv[]) {
         buffer << file.rdbuf();
         std::string code = buffer.str();
         auto processed = ntr::lexer::process(code);
-        for(auto el : processed) print(el);
         ntr::env::Env env;
         ntr::Parser parser(processed);
         ntr::interpreter::Interpreter inter(env);
