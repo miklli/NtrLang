@@ -9,6 +9,7 @@ add_executable(ntr
     src/env.cpp
     src/interpreter.cpp
     src/utils.cpp
+    src/compiler.cpp
 )
 
 target_include_directories(ntr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

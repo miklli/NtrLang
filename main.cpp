@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "interpreter.h"
+#include "compiler.h"
 
 using namespace ntr::token;
 using namespace std;
@@ -86,7 +87,10 @@ int main(int argc, char* argv[]) {
         ntr::Parser parser(processed);
         ntr::interpreter::Interpreter inter(env);
         parser.Parse(env);
-        inter.run(parser.functions);
+        ntr::Compiler compiler(parser.statements);
+        //inter.run(parser.statements);
+        compiler.compile();
+        compiler.printI();
     }
     catch(const runtime_error& e) {
         cout << "Error: " << e.what() << '\n';

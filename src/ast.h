@@ -106,7 +106,7 @@ struct Stmt {
 struct LetStmt : Stmt {
     std::string name;
     std::unique_ptr<Expr> value;
-    LetStmt(std::string name, std::unique_ptr<Expr> value, ntr::env::Env &env): 
+    LetStmt(std::string name, std::unique_ptr<Expr> value): 
         name(std::move(name)),
         value(std::move(value)) {
             if (containsVar(this->value.get(), this->name)) {

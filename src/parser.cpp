@@ -81,7 +81,7 @@ namespace ntr {
             expect<Equals>("expected '='.");
             auto expr = parseExpr(env);
             expect<Semicolon>("expected ';'.");
-            return std::make_unique<LetStmt>(name, std::move(expr), env);
+            return std::make_unique<LetStmt>(name, std::move(expr));
         }
         else if(isIdent("print")) {
             get(); //print
@@ -96,7 +96,7 @@ namespace ntr {
 
     void Parser::Parse(ntr::env::Env &env) {
         while(!std::holds_alternative<endTok>(peek())) {
-            functions.push_back(std::move(parseStmt(env)));
+            statements.push_back(std::move(parseStmt(env)));
         }
     }
 }

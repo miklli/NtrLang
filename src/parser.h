@@ -23,7 +23,7 @@ namespace ntr {
 
         bool isIdent(const std::string &kw);
     public:
-        std::vector<unique_ptr<Stmt>> functions; 
+        std::vector<unique_ptr<Stmt>> statements; 
         Parser(const vector<Any> &tokens);
         void Parse(ntr::env::Env &env);
     };
