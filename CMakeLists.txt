@@ -6,8 +6,6 @@ add_executable(ntr
     main.cpp
     src/lexer.cpp
     src/parser.cpp
-    src/env.cpp
-    src/interpreter.cpp
     src/utils.cpp
     src/compiler.cpp
 )

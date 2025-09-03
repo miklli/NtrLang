@@ -101,6 +101,7 @@ namespace ntr::lexer {
                     std::string str;
                     it++;
                     while(*it != '"') {
+                        if(*it == '\n') throw runtime_error("Expected end of the string.");
                         str += *it;
                         it++;
                     }

@@ -1,15 +1,34 @@
 #include "compiler.h"
+#include "utils.h"
 
 namespace ntr {
-    PUSH::PUSH(int v): value_int(v) {}
-    PUSH::PUSH(std::string v): value_str(v) {}
+
+    ExprType SemanticTable::getVarType(std::string& name) {
+        if(STab.find(name) == STab.end()) {
+            throw std::runtime_error("Undefined variable: " + name + ".");
+        }
+        return STab[name];
+    }
+
+    void SemanticTable::setVarType(std::string &name, Expr* value) {
+        if(STab.find(name) != STab.end()) {
+            throw std::runtime_error("The variable '" + name + "' is already initialized."); 
+        }
+        ExprType etype = getExprType(value, *this);
+        STab[name] = etype;
+    }
+
+
+    PUSH::PUSH(int v): value(v) {}
+    PUSH::PUSH(std::string v): value(v) {}
 
     STORE::STORE(std::string name): name(name) {}
     LOAD::LOAD(std::string name): name(name) {}
 
     Compiler::Compiler(std::vector<std::unique_ptr<Stmt>>& statem): statements(statem) {}
     
-    void Compiler::compile() {
+    void Compiler::compile(ntr::SemanticTable &STab) {
+        SemanticAnalysis(STab);
         for(const auto& state : statements) {
             if(auto l = dynamic_cast<LetStmt*>(state.get())) {
                 SetLetStmt(std::make_unique<LetStmt>(l->name, std::move(l->value)));
@@ -20,38 +39,45 @@ namespace ntr {
         }
     }
 
-    void Compiler::printI() {
-        for(auto &el : instucts) {
-            if(auto v = dynamic_cast<PUSH*>(el.get())) {
-                cout << "PUSH ";
-                if(v->value_int.has_value()) {
-                    cout << *v->value_int << endl;
-                    continue;
-                }
-                cout << *v->value_str << endl;
-            }
-            else if(auto v = dynamic_cast<STORE*>(el.get())) {
-                cout << "STORE " << v->name << endl;
-            }
-            else if(auto v = dynamic_cast<LOAD*>(el.get())) {
-                cout << "LOAD " << v->name << endl;
-            }
-            else if(auto v = dynamic_cast<PRINT*>(el.get())) {
-                cout << "PRINT" << endl;
-            }
-            else if(auto v = dynamic_cast<ADD*>(el.get())) {
-                cout << "ADD" << endl;
-            }
-            else if(auto v = dynamic_cast<SUB*>(el.get())) {
-                cout << "SUB" << endl;
-            }
-            else if(auto v = dynamic_cast<MUL*>(el.get())) {
-                cout << "MUL" << endl;
-            }
-            else if(auto v = dynamic_cast<DIV*>(el.get())) {
-                cout << "DIV" << endl;
+    void Compiler::SemanticAnalysis(ntr::SemanticTable &STab) {
+        for(auto& stmt : statements) {
+            if(!isStmtValid(stmt.get(), STab)) {
+                throw runtime_error("Unknow error");
             }
         }
+    }
+
+    void Compiler::ToBinFile() {
+        std::vector<uint8_t> bytecode;
+        for(auto &el : instucts) {
+            if(auto v = dynamic_cast<PUSH*>(el.get())) {
+                bytecode.push_back(v->getOpCode());
+                if(auto i = get_if<int>(&v->value)) {
+                    IntToBin(bytecode, *i);
+                }
+                else if(auto s = get_if<std::string>(&v->value)) {
+                    StrToBin(bytecode, *s);
+                }
+            }
+            else if(auto v = dynamic_cast<STORE*>(el.get())) {
+                bytecode.push_back(v->getOpCode());
+                StrToBin(bytecode, v->name);
+            }
+            else if(auto v = dynamic_cast<LOAD*>(el.get())) {
+                bytecode.push_back(v->getOpCode());
+                StrToBin(bytecode, v->name);
+            }
+            else if(auto v = dynamic_cast<Instruct*>(el.get())) {
+                bytecode.push_back(v->getOpCode());
+            }
+        }
+
+        std::ofstream outFile("main.nbc", std::ios::binary);
+        if (!outFile) {
+            throw runtime_error("Can not compile to '.nbs' file");
+        }
+        outFile.write(reinterpret_cast<const char*>(bytecode.data()), bytecode.size());
+        outFile.close();
     }
 
     void Compiler::SetLetStmt(std::unique_ptr<LetStmt> state) {

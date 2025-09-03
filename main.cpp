@@ -1,6 +1,5 @@
 #include "lexer.h"
 #include "parser.h"
-#include "interpreter.h"
 #include "compiler.h"
 
 using namespace ntr::token;
@@ -83,17 +82,15 @@ int main(int argc, char* argv[]) {
         buffer << file.rdbuf();
         std::string code = buffer.str();
         auto processed = ntr::lexer::process(code);
-        ntr::env::Env env;
         ntr::Parser parser(processed);
-        ntr::interpreter::Interpreter inter(env);
-        parser.Parse(env);
+        parser.Parse();
         ntr::Compiler compiler(parser.statements);
-        //inter.run(parser.statements);
-        compiler.compile();
-        compiler.printI();
+        ntr::SemanticTable STab;
+        compiler.compile(STab);
+        compiler.ToBinFile();
     }
     catch(const runtime_error& e) {
-        cout << "Error: " << e.what() << '\n';
+        cout << "Error " << e.what() << '\n';
     }
     return 0;
 }
