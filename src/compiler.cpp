@@ -1,3 +1,10 @@
+#include <fstream>
+#include <stdexcept>
+#include <variant>
+#include <vector>
+#include <string>
+#include <utility> 
+
 #include "compiler.h"
 #include "utils.h"
 
@@ -19,8 +26,9 @@ namespace ntr {
     }
 
 
-    PUSH::PUSH(int v): value(v) {}
-    PUSH::PUSH(std::string v): value(v) {}
+    PUSH::PUSH(int v): value(std::in_place_type<int>, v) {}
+    PUSH::PUSH(std::string v): value(std::in_place_type<std::string>, std::move(v)) {}
+
 
     STORE::STORE(std::string name): name(name) {}
     LOAD::LOAD(std::string name): name(name) {}

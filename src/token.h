@@ -1,6 +1,9 @@
-#include <bits/stdc++.h>
-
 #pragma once
+#include <string>
+#include <variant>
+#include <cstdint>
+#include <iostream>
+
 using namespace std;
 
 namespace ntr::token {

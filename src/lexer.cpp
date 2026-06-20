@@ -1,4 +1,12 @@
-#include <bits/stdc++.h>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
+#include <cctype>
+#include <iterator>
+#include <stdexcept>
+#include <variant>
+
 #include "token.h"
 #include "lexer.h"
 

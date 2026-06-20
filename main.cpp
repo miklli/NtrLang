@@ -1,6 +1,9 @@
 #include "lexer.h"
 #include "parser.h"
 #include "compiler.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace ntr::token;
 using namespace std;
